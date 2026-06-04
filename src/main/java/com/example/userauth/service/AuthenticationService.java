@@ -86,9 +86,9 @@ public class AuthenticationService {
             if(user.isEnabled()){
                 throw new RuntimeException("Account is already enabled");
             }
-            user.setVerificationCode(generateVertificationCode());
+            user.setVerificationCode(generateVerificationCode());
             user.setVerificationExpiration(LocalDateTime.now().plusMinutes(30));
-            sendVerificatonEmail(user);
+            sendVerificationEmail(user);
             userRepository.save(user);
         }
         else{
