@@ -36,7 +36,7 @@ public class AuthenticationService {
 
     public User signUp(RegisterUserDto input){
         User user = new User(input.getUsername(),input.getMail(), bCryptPasswordEncoder.encode(input.getPassword()));
-        user.setVerificationCode(generateVertificatonCode());
+        user.setVerificationCode(generateVerificationCode());
         user.setVerificationExpiration(LocalDateTime.now().plusMinutes(10));
         user.setEnabled(false);
         sendVerificationEmail(user);
@@ -97,7 +97,7 @@ public class AuthenticationService {
     }
     public void sendVerificationEmail(User user){
         String subject = "Account verification";
-        String verificationCode = "Verification code" user.getVerificationCode();
+        String verificationCode = "Verification code" + user.getVerificationCode();
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"
                 + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
