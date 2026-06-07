@@ -10,9 +10,9 @@ import java.util.Properties;
 
 @Configuration
 public class emailConfiguration {
-    @Value("${spring.email.username}")
+    @Value("${spring.mail.username}")
     private String username;
-    @Value("${spring.email.password}")
+    @Value("${spring.mail.password}")
     private String password;
 
     @Bean

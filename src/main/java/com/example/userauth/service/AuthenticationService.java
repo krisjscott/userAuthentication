@@ -44,7 +44,7 @@ public class AuthenticationService {
         return userRepository.save(user);
     }
     public User authenticate(loginUserDto input){
-        User user = userRepository.findByMail(input.getEmail())
+        User user = userRepository.findByEmail(input.getEmail())
                 .orElseThrow(() -> new RuntimeException("User doesn't exist"));
 
         if(!user.isEnabled()){
@@ -59,7 +59,7 @@ public class AuthenticationService {
         return user;
     }
     public void verifyUser(VerifyUserDto input){
-        Optional<User> optionalUser = userRepository.findByMail(input.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmail(input.getEmail());
 
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
@@ -80,7 +80,7 @@ public class AuthenticationService {
     }
 
     public void resendVerificationCode(String email){
-        Optional<User> optionalUser = userRepository.findByMail(email);
+        Optional<User> optionalUser = userRepository.findByEmail(email);
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
             if(user.isEnabled()){
