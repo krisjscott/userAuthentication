@@ -2,7 +2,7 @@ package com.example.userauth.service;
 
 import com.example.userauth.dto.RegisterUserDto;
 import com.example.userauth.dto.VerifyUserDto;
-import com.example.userauth.dto.loginUserDto;
+import com.example.userauth.dto.LoginUserDto;
 import com.example.userauth.model.User;
 import com.example.userauth.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -43,7 +43,7 @@ public class AuthenticationService {
 
         return userRepository.save(user);
     }
-    public User authenticate(loginUserDto input){
+    public User authenticate(LoginUserDto input){
         User user = userRepository.findByEmail(input.getEmail())
                 .orElseThrow(() -> new RuntimeException("User doesn't exist"));
 
@@ -66,7 +66,7 @@ public class AuthenticationService {
             if(user.getVerificationExpiration().isBefore(LocalDateTime.now())){
                 throw new RuntimeException("User verification time is expired");
             }
-            if(user.getVerificationCode().equals(user.getVerificationCode())){
+            if(user.getVerificationCode().equals(input.getVerificationCode())){
                 user.setEnabled(true);
                 user.setVerificationCode(null);
                 user.setVerificationExpiration(null);
