@@ -4,6 +4,7 @@ import com.example.userauth.dto.RegisterUserDto;
 import com.example.userauth.dto.ResendOtpRequest;
 import com.example.userauth.dto.VerifyUserDto;
 import com.example.userauth.dto.LoginUserDto;
+import com.example.userauth.model.OtpToken;
 import com.example.userauth.model.User;
 import com.example.userauth.responses.LoginResponse;
 import com.example.userauth.service.AuthenticationService;
@@ -36,7 +37,9 @@ public class AuthenticationController {
     public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto login ){
         User authenticatedUser = authenticationService.authenticate(login);
         String jwtToken = jwtService.generateToken(authenticatedUser);
-        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime());
+
+        boolean otpRequired  = true;
+        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime(), otpRequired);
         return ResponseEntity.ok(loginResponse);
     }
 

@@ -6,11 +6,13 @@ import com.example.userauth.dto.LoginUserDto;
 import com.example.userauth.model.User;
 import com.example.userauth.repository.UserRepository;
 import jakarta.mail.MessagingException;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -43,20 +45,40 @@ public class AuthenticationService {
 
         return userRepository.save(user);
     }
-    public User authenticate(LoginUserDto input){
+//    public User authenticate(LoginUserDto input){
+//        User user = userRepository.findByEmail(input.getEmail())
+//                .orElseThrow(() -> new RuntimeException("User doesn't exist"));
+//
+//        if(!user.isEnabled()){
+//            throw new RuntimeException("Account is not enabled");
+//        }
+//        authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        input.getEmail(),
+//                        input.getPassword()
+//                )
+//        );
+//        return user;
+//    }
+
+    public void initiateLogin(LoginUserDto input) throws MessagingException {
         User user = userRepository.findByEmail(input.getEmail())
                 .orElseThrow(() -> new RuntimeException("User doesn't exist"));
 
-        if(!user.isEnabled()){
-            throw new RuntimeException("Account is not enabled");
+
+        if(!user.isEnabled()) {
+            throw new RuntimeException("User is disabled");
         }
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         input.getEmail(),
                         input.getPassword()
                 )
         );
-        return user;
+        OtpService otpService = null;
+        otpService.generateAndSendOtp(input.getEmail());
+
     }
     public void verifyUser(VerifyUserDto input){
         Optional<User> optionalUser = userRepository.findByEmail(input.getEmail());
@@ -118,7 +140,7 @@ public class AuthenticationService {
         }
     }
     private String generateVerificationCode(){
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         int code = random.nextInt(900000) + 100000;
         return String.valueOf(code);
     }
