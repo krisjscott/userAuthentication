@@ -118,6 +118,7 @@ public class AuthenticationService {
         }
     }
     public void sendVerificationEmail(User user){
+
         String subject = "Account verification";
         String verificationCode = "Verification code" + user.getVerificationCode();
         String htmlMessage = "<html>"
