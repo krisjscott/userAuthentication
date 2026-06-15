@@ -25,6 +25,6 @@ public class TestController {
     @GetMapping("/any-user")
     @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER')")
     public ResponseEntity<String> anyUser() {
-        return ResponseEntity.ok("You are authenticated");
+        return ResponseEntity.ok("You are auth user");
     }
 }
