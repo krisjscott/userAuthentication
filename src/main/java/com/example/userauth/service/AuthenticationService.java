@@ -95,7 +95,7 @@ public class AuthenticationService {
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
             if(user.getVerificationExpiration().isBefore(LocalDateTime.now())){
-                throw new RuntimeException("User verification time is expired");
+                throw new RuntimeException("User verification time is expired, please re-generate");
             }
             if(user.getVerificationCode().equals(input.getVerificationCode())){
                 user.setEnabled(true);

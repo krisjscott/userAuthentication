@@ -50,7 +50,7 @@ public class OtpService {
     @Transactional
     public User verifyOtp(String email, String otp) throws MessagingException {
 
-        OtpToken otpToken = otpTokenRepository.findByUserEmail(email);
+        OtpToken otpToken = otpTokenRepository.findFirstByUserEmailOrderByCreateTimeDesc(email);
 
         if(otpToken == null) {
             throw new RuntimeException("No OTP found for this email");

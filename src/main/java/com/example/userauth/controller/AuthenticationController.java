@@ -1,7 +1,6 @@
 package com.example.userauth.controller;
 
 import com.example.userauth.dto.*;
-import com.example.userauth.model.OtpToken;
 import com.example.userauth.model.User;
 import com.example.userauth.responses.LoginResponse;
 import com.example.userauth.service.AuthenticationService;
@@ -45,7 +44,17 @@ public class AuthenticationController {
     public ResponseEntity<?> VerifyOTP(@RequestBody OtpVerifyDto dto) throws MessagingException {
         User user = authenticationService.completeOtpLogin(dto);
         String token = jwtService.generateToken(user);
-        return ResponseEntity.ok((new LoginResponse(token, jwtService.getExpirationTime(), true)));
+        return ResponseEntity.ok((new LoginResponse(token, jwtService.getExpirationTime(), false)));
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyUser(@RequestBody VerifyUserDto verifyUserDto){
+        try {
+            authenticationService.verifyUser(verifyUserDto);
+            return ResponseEntity.ok("Account verified successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/resend")
