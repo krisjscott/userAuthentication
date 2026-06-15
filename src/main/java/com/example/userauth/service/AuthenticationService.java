@@ -1,12 +1,12 @@
 package com.example.userauth.service;
 
+import com.example.userauth.dto.OtpVerifyDto;
 import com.example.userauth.dto.RegisterUserDto;
 import com.example.userauth.dto.VerifyUserDto;
 import com.example.userauth.dto.LoginUserDto;
 import com.example.userauth.model.User;
 import com.example.userauth.repository.UserRepository;
 import jakarta.mail.MessagingException;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
+
 
 @Service
 public class AuthenticationService {
@@ -23,17 +23,20 @@ public class AuthenticationService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final OtpService otpService;
 
     public AuthenticationService(
             UserRepository userRepository,
             BCryptPasswordEncoder bCryptPasswordEncoder,
             AuthenticationManager authenticationManager,
-            EmailService emailService
+            EmailService emailService,
+            OtpService otpService
     ){
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
+        this.otpService = otpService;
     }
 
     public User signUp(RegisterUserDto input){
@@ -42,6 +45,8 @@ public class AuthenticationService {
         user.setVerificationExpiration(LocalDateTime.now().plusMinutes(10));
         user.setEnabled(false);
         sendVerificationEmail(user);
+        user.setRole(input.getRole());
+
 
         return userRepository.save(user);
     }
@@ -61,7 +66,7 @@ public class AuthenticationService {
 //        return user;
 //    }
 
-    public void initiateLogin(LoginUserDto input) throws MessagingException {
+    public User initiateLogin(LoginUserDto input) throws MessagingException {
         User user = userRepository.findByEmail(input.getEmail())
                 .orElseThrow(() -> new RuntimeException("User doesn't exist"));
 
@@ -79,6 +84,11 @@ public class AuthenticationService {
         OtpService otpService = null;
         otpService.generateAndSendOtp(input.getEmail());
 
+        return user;
+    }
+
+    public User completeOtpLogin(OtpVerifyDto input) throws MessagingException {
+        return otpService.verifyOtp(input.getEmail(), input.getOtp());
     }
     public void verifyUser(VerifyUserDto input){
         Optional<User> optionalUser = userRepository.findByEmail(input.getEmail());

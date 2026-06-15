@@ -1,14 +1,12 @@
 package com.example.userauth.controller;
 
-import com.example.userauth.dto.RegisterUserDto;
-import com.example.userauth.dto.ResendOtpRequest;
-import com.example.userauth.dto.VerifyUserDto;
-import com.example.userauth.dto.LoginUserDto;
+import com.example.userauth.dto.*;
 import com.example.userauth.model.OtpToken;
 import com.example.userauth.model.User;
 import com.example.userauth.responses.LoginResponse;
 import com.example.userauth.service.AuthenticationService;
 import com.example.userauth.service.JwtService;
+import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,8 +32,8 @@ public class AuthenticationController {
         return ResponseEntity.ok(s);
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto login ){
-        User authenticatedUser = authenticationService.authenticate(login);
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto login ) throws MessagingException {
+        User authenticatedUser = authenticationService.initiateLogin(login);
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
         boolean otpRequired  = true;
@@ -43,14 +41,11 @@ public class AuthenticationController {
         return ResponseEntity.ok(loginResponse);
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<?> VerifyUser(@RequestBody VerifyUserDto verify){
-            try{
-                authenticationService.verifyUser(verify);
-                return ResponseEntity.ok("Account verified successfully");
-            }catch (RuntimeException e){
-                return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> VerifyOTP(@RequestBody OtpVerifyDto dto) throws MessagingException {
+        User user = authenticationService.completeOtpLogin(dto);
+        String token = jwtService.generateToken(user);
+        return ResponseEntity.ok((new LoginResponse(token, jwtService.getExpirationTime(), true)));
     }
 
     @PostMapping("/resend")
