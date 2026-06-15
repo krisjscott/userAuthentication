@@ -81,8 +81,7 @@ public class AuthenticationService {
                         input.getPassword()
                 )
         );
-        OtpService otpService = null;
-        otpService.generateAndSendOtp(input.getEmail());
+        this.otpService.generateAndSendOtp(input.getEmail());
 
         return user;
     }

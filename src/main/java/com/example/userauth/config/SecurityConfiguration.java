@@ -53,7 +53,7 @@ public class SecurityConfiguration {
                                         , "http://localhost:8000"
                                         , "http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedMethods(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
         configuration.setAllowCredentials(true);
 

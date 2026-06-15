@@ -6,7 +6,6 @@ import com.example.userauth.repository.OtpTokenRepository;
 import com.example.userauth.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -20,13 +19,11 @@ public class OtpService {
 //    private final OtpToken otpToken;
 //    private final BCryptPasswordEncoder  bCryptPasswordEncoder;
 
-    public OtpService(OtpTokenRepository otpTokenRepository, EmailService emailService
-            , UserRepository userRepository, OtpToken otpToken,  BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public OtpService(OtpTokenRepository otpTokenRepository, EmailService emailService,
+                      UserRepository userRepository) {
         this.otpTokenRepository = otpTokenRepository;
         this.emailService = emailService;
         this.userRepository = userRepository;
-//        this.otpToken = otpToken;
-//        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Transactional
@@ -55,6 +52,9 @@ public class OtpService {
 
         OtpToken otpToken = otpTokenRepository.findByUserEmail(email);
 
+        if(otpToken == null) {
+            throw new RuntimeException("No OTP found for this email");
+        }
         if(otpToken.isExpired()) {
             throw new RuntimeException("Invalid OTP");
         }
