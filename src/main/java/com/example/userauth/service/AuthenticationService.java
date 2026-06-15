@@ -129,7 +129,7 @@ public class AuthenticationService {
     public void sendVerificationEmail(User user){
 
         String subject = "Account verification";
-        String verificationCode = "Verification code" + user.getVerificationCode();
+        String verificationCode = "Verification code: " + user.getVerificationCode();
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"
                 + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
@@ -137,7 +137,7 @@ public class AuthenticationService {
                 + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
                 + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
                 + "<h3 style=\"color: #333;\">Verification Code:</h3>"
-                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + verificationCode + "</p>"
+                + verificationCode + "</p>"
                 + "</div>"
                 + "</div>"
                 + "</body>"
