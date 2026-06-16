@@ -34,7 +34,7 @@ public class OtpService {
 
         otpTokenRepository.deleteByUser(user);
 
-        String code = String.format("%06d", new SecureRandom().nextInt(1000000));
+        String code = String.format("%06d", new SecureRandom().nextInt(100000));
 
         OtpToken otpToken = OtpToken.builder()
                 .user(user)
